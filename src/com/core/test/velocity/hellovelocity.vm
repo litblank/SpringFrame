@@ -1,0 +1,15 @@
+#set($greet = 'hello')
+
+$greet $name
+ 
+#foreach($i in $list)
+$i
+#end
+
+#if($flag)
+	true
+#elseif($flag)
+	false	
+#else
+	
+#end

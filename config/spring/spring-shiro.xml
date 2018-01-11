@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<!-- Shiro的Web过滤器-->
+	<bean id="shiroFilter" class="cyd.admin.shiro.ShiroFilterFactoryBeanExtend">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/login.jsp" />
+		<!-- <property name="successUrl" value="/index.jsp" /> -->
+		<property name="unauthorizedUrl" value="/unauthorized.jsp" />
+		<property name="filters">
+			<util:map>
+				<entry key="onperms" value-ref="URLPermissionsFilter" /> 
+			</util:map>
+		</property> 
+		<property name="filterChainDefinitions">
+			<value>
+				/unauthorized.jsp = anon
+				/logoutController=anon
+				/login.jsp=authc
+			</value>
+		</property>
+	</bean>
+
+	<!-- 安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="myRealm" />
+		<property name="cacheManager" ref="shiroCacheManager" />
+	</bean>
+	<!-- 自定义认证，授权 -->
+	<bean id="myRealm" class="cyd.admin.shiro.AuthorizingRealmExtends"></bean>
+
+	<!-- 注册ehcache，不然每次访问都要登陆 -->
+	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+	</bean>
+	
+	<!-- 自定义鉴权拦截器 -->
+	<bean id="URLPermissionsFilter" class="cyd.admin.shiro.URLPermissionsFilter" />
+
+</beans>
